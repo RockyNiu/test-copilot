@@ -1,27 +1,24 @@
 /*
 Create a controller with the following specifications:
 
-1. import the Configuration class and the OpenAIApi class from the openai npm module
-2. create a new configuration object that includes the api key and uses the Configuration class from the openai module
-3. create a new instance of the OpenAIApi class and pass in the configuration object
+1. import the OpenAPI class from the openai npm module
+3. create a new instance of the OpenAIApi class
 4. create an async function called generateInfo that accepts a request and response object as parameters
 5. use try to make a request to the OpenAI completetion api and return the response
 6. use catch to catch any errors and return the error include a message to the user
 7. export the generateInfo function as a module
 */
-// 1. import the Configuration class and the OpenAIApi class from the openai npm module
-import { Configuration, OpenAIApi } from 'openai';
+// 1. import the OpenAPI class from the openai npm module
+import OpenAI from 'openai';
+import { requireFile } from './utils.js';
 
 // add the prompt to the top of the file
-const { recipePrompt } = require('../../data/recipe.json');
+const { recipePrompt } = requireFile('../../data/prompt.json');
 
-// 2. create a new configuration object that includes the api key and uses the Configuration class from the openai module
-const configuration = new Configuration({
+// 3. create a new instance of the OpenAIApi class
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// 3. create a new instance of the OpenAIApi class and pass in the configuration object
-const openai = new OpenAIApi(configuration);
 
 // 4. create an async function called generateInfo that accepts a request and response object as parameters
 const generateInfo = async (req, res) => {
@@ -31,7 +28,7 @@ const generateInfo = async (req, res) => {
     const { prompt, maxTokens, temperature, topP, n, stream, recipe } =
       req.body;
     // 2. create a variable called response and assign it to the response from the OpenAI completetion api
-    const completion = await openai.complete({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         { role: 'user', content: `${prompt ?? recipePrompt}${recipe}` },
@@ -49,7 +46,7 @@ const generateInfo = async (req, res) => {
     });
   } catch (error) {
     // 6. use catch to catch any errors and return the error include a message to the user
-    if (error.response.status === 401) {
+    if (error instanceof OpenAI.APIError) {
       return res.status(401).json({
         error: 'Please provide a valid API key.',
       });

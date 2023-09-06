@@ -2,19 +2,26 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Run application",
-        "type": "node",
+        "name": "Launch via NPM",
         "request": "launch",
-        "cwd": "${workspaceFolder}",
-        "console": "integratedTerminal",
-        "runtimeExecutable": "npm",
         "runtimeArgs": [
-          "run",
-          "dev"
+          "run-script",
+          "debug"
         ],
+        "runtimeExecutable": "npm",
         "skipFiles": [
           "<node_internals>/**"
-        ]
-      }
-    ]
+        ],
+        "type": "node"
+      },
+      {
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/pages/api/server.js",
+        "request": "launch",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "type": "node"
+      },
+  ]
   }
