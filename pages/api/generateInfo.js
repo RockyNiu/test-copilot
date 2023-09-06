@@ -11,11 +11,9 @@ Create a controller with the following specifications:
 */
 // 1. import the Configuration class and the OpenAIApi class from the openai npm module
 import { Configuration, OpenAIApi } from 'openai';
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaClient } from '@prisma/client';
-import { nanoid } from 'nanoid';
-import { getSession } from 'next-auth/client';
-import { getAccessToken } from 'next-auth/jwt';
+
+// add the prompt to the top of the file
+const { recipePrompt } = require('../../data/recipe.json');
 
 // 2. create a new configuration object that includes the api key and uses the Configuration class from the openai module
 const configuration = new Configuration({
@@ -30,23 +28,36 @@ const generateInfo = async (req, res) => {
   // 5. use try to make a request to the OpenAI completetion api and return the response
   try {
     // 1. destructure the request body
-    const { prompt, maxTokens, temperature, topP, n, stream } = req.body;
+    const { prompt, maxTokens, temperature, topP, n, stream, recipe } =
+      req.body;
     // 2. create a variable called response and assign it to the response from the OpenAI completetion api
-    const response = await openai.complete({
-      engine: 'davinci',
-      prompt: prompt,
-      maxTokens: maxTokens,
-      temperature: temperature,
-      topP: topP,
-      n: n,
-      stream: stream,
-      stop: ['\n', 'Human:', 'AI:'],
+    const completion = await openai.complete({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        { role: 'user', content: `${prompt ?? recipePrompt}${recipe}` },
+      ],
+      max_tokens: maxTokens ?? 200,
+      temperature: temperature ?? 0,
+      n: n ?? 1,
     });
+
+    const response = completion.data.choices[0].message.content;
     // 3. return the response from the api to the client
-    res.status(200).json(response);
+    return res.status(200).json({
+      success: true,
+      data: response,
+    });
   } catch (error) {
     // 6. use catch to catch any errors and return the error include a message to the user
-    res.status(400).json({ message: error.message });
+    if (error.response.status === 401) {
+      return res.status(401).json({
+        error: 'Please provide a valid API key.',
+      });
+    }
+    return res.status(500).json({
+      error:
+        'An error occurred while generating recipe information. Please try again later.',
+    });
   }
 };
 
