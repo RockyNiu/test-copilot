@@ -10,18 +10,7 @@
 // 1. import express and dotenv node modules
 import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
-import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import session from 'express-session';
-import passport from 'passport';
-import passportLocal from 'passport-local';
-import bcrypt from 'bcryptjs';
-import User from './models/user.js';
-import Post from './models/post.js';
-import Comment from './models/comment.js';
-import { v4 as uuidv4 } from 'uuid';
 
 // 2. configure dotenv
 dotenv.config();
