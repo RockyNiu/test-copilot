@@ -38,7 +38,7 @@ const generateInfo = async (req, res) => {
       n: n ?? 1,
     });
 
-    const response = completion.data.choices[0].message.content;
+    const response = completion.choices[0].message.content;
     // 3. return the response from the api to the client
     return res.status(200).json({
       success: true,

@@ -19,13 +19,13 @@ import router from './router.js';
 const app = express();
 
 // 4. use port 8080 as default port
-const port = process.env.PORT || 8080;
+const port = process.env.PORT ?? 8080;
 
 // 5. enable body parser to accept json data
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('openapi', router);
+app.use('/openai', router);
 
 // 6. state which port the server is listening to and log it to the console
 app.listen(port, () => console.log(`Server is running on port ${port}`));
