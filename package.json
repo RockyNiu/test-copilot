@@ -9,17 +9,18 @@
     "server": "nodemon pages/api/server.js"
   },
   "dependencies": {
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/icons": "^4.11.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "next": "latest",
+    "next-auth": "^4.23.1",
     "openai": "^4.4.0",
-    "prettier": "^3.0.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": "18.2.0",
+    "react-bootstrap": "^2.8.0",
+    "react-dom": "18.2.0",
+    "react-query": "^3.39.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3"
   }
 }
