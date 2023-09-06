@@ -40,7 +40,7 @@ const generateInfo = async (req, res) => {
       topP: topP,
       n: n,
       stream: stream,
-      stop: ['\n', "Human:", "AI:"],
+      stop: ['\n', 'Human:', 'AI:'],
     });
     // 3. return the response from the api to the client
     res.status(200).json(response);

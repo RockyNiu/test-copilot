@@ -30,6 +30,3 @@ app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 // 7. export the server as app
 export default app;
-
-
-
