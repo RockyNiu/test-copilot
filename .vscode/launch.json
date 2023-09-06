@@ -2,20 +2,7 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Launch via NPM",
-        "request": "launch",
-        "runtimeArgs": [
-          "run-script",
-          "debug"
-        ],
-        "runtimeExecutable": "npm",
-        "skipFiles": [
-          "<node_internals>/**"
-        ],
-        "type": "node"
-      },
-      {
-        "name": "Launch Program",
+        "name": "Server",
         "program": "${workspaceFolder}/pages/api/server.js",
         "request": "launch",
         "skipFiles": [
