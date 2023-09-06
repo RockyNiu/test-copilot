@@ -1,71 +1,91 @@
-import { useCallback, useEffect, useState } from 'react';
-import Button from '../components/Button';
-import ClickCount from '../components/ClickCount';
-import styles from '../styles/home.module.css';
+// 1. a H1 with the text "Find Nutrition Facts for any recipe"
+// 2. a text area for users to upload recipe
+// 3. a button for users to submit the entered recipe
+// 4. a section at the bottom to display nutrition facts
+// 5. Get the data from this link: http://localhost:8080/openai/generateinfo
+// 6. Name the component RecipeInfo
 
-function throwError() {
-  console.log(
-    // The function body() is not defined
-    document.body()
+// 1. a H1 with the text "Find Nutrition Facts for any recipe"
+// 2. a text area for users to upload recipe
+// 3. a button for users to submit the entered recipe
+// 4. a section at the bottom to display nutrition facts
+// 5. Get the data from this link: http://localhost:8080/openai/generateinfo
+// 6. Name the component RecipeInfo
+import { useState } from 'react';
+import axios from 'axios';
+import { nanoid } from 'nanoid';
+import { getSession } from 'next-auth/client';
+import { getAccessToken } from 'next-auth/jwt';
+import { useRouter } from 'next/router';
+import { useMutation } from 'react-query';
+import { useSession } from 'next-auth/client';
+import { useQueryClient } from 'react-query';
+import { PrismaClient } from '@prisma/client';
+import { nanoid } from 'nanoid';
+import { getSession } from 'next-auth/client';
+import { getAccessToken } from 'next-auth/jwt';
+import { useRouter } from 'next/router';
+
+
+const RecipeInfo = () => {
+  const [session, loading] = useSession();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [recipe, setRecipe] = useState('');
+
+  const mutation = useMutation(
+    async (recipe) => {
+      const response = await axios.post('/api/generateInfo', {
+        recipe,
+      });
+      return response.data;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData('recipeInfo', data);
+        router.push('/recipeInfo');
+      },
+    }
   );
-}
 
-function Home() {
-  const [count, setCount] = useState(0);
-  const increment = useCallback(() => {
-    setCount((v) => v + 1);
-  }, [setCount]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate(recipe);
+  };
 
-  useEffect(() => {
-    const r = setInterval(() => {
-      increment();
-    }, 1000);
+  if (loading) return null;
 
-    return () => {
-      clearInterval(r);
-    };
-  }, [increment]);
+  if (!loading && !session) {
+    router.push('/');
+  }
 
   return (
-    <main className={styles.main}>
-      <h1>Fast Refresh Demo</h1>
-      <p>
-        Fast Refresh is a Next.js feature that gives you instantaneous feedback
-        on edits made to your React components, without ever losing component
-        state.
-      </p>
-      <hr className={styles.hr} />
-      <div>
-        <p>
-          Auto incrementing value. The counter won't reset after edits or if
-          there are errors.
-        </p>
-        <p>Current value: {count}</p>
-      </div>
-      <hr className={styles.hr} />
-      <div>
-        <p>Component with state.</p>
-        <ClickCount />
-      </div>
-      <hr className={styles.hr} />
-      <div>
-        <p>
-          The button below will throw 2 errors. You'll see the error overlay to
-          let you know about the errors but it won't break the page or reset
-          your state.
-        </p>
-        <Button
-          onClick={(e) => {
-            setTimeout(() => document.parentNode(), 0);
-            throwError();
-          }}
-        >
-          Throw an Error
-        </Button>
-      </div>
-      <hr className={styles.hr} />
-    </main>
+    <div className="container">
+      <h1 className="title">Find Nutrition Facts for any recipe</h1>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="recipe">Recipe</label>
+          <textarea
+            className="form-control"
+            id="recipe"
+            rows="3"
+            value={recipe}
+            onChange={(e) => setRecipe(e.target.value)}
+          ></textarea>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </form>
+      <style jsx>{`
+        .container {
+          padding: 2rem;
+        }
+        .title {
+          margin-bottom: 2rem;
+        }
+      `}</style>
+    </div>
   );
-}
 
-export default Home;
+}
